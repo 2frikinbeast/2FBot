@@ -7,6 +7,7 @@ client = discord.Client()
 
 cringe_words = ["cringe", "based"]
 
+
 @client.event
 async def on_message(message):
     # we do not want the bot to reply to itself
@@ -34,6 +35,7 @@ async def on_message(message):
             await message.channel.send(msg)
             return
     return
+
 
 @client.event
 async def on_ready():
