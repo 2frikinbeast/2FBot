@@ -1,6 +1,7 @@
 import discord
+import os
 
-TOKEN = 'NTMyMzI2MzQzNzUzNTk2OTM4.XDUlig.iCfIuLNLpHBfBtAE3DnHeDFQuAw'
+TOKEN = os.environ.get('2FBOT_TOKEN')
 
 client = discord.Client()
 
