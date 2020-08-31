@@ -22,7 +22,15 @@ async def on_message(message):
 
     for i in cringe_words:
         if i in discord_input.lower():
-            msg = "\"Hurr, Cringe! Durr, Cringe! Cringe!\" \nIs that all you shitposting fucks can say?! \n\"ugh, based based based cringe cringe cringe based based cringe cringe\" \nI feel like I'm in a fucking asylum full of dementering old people, that can do nothing but repeat the same fucking words and look like a fucking broken record! \n\"Cringe cringe cringe cringe! cringe based based! onions onions soy! onions LOL onions! Cringe boomer Le zoomer! I am boomer?! No zoom zoom zoomies, zoomer going zoomies!\" \nAGH I FUCKING HATE THE INTERNET SO GOD DAMN MUCH!! FUCK SHITPOSTING HONEST GOD-FUCKING I HOPE YOUR MOTHER CHOKES ON HER OWN FECES IN HELL! YOU COCKSUCKER! \nOH BUT I KNOW MY POST IS CRINGED ISN'T IT? CRINGE CRINGE CRINGEY-CRINGE BASED CRINGE REDDIT CRINGE BASED REDDIT ONIONS BASED ONIONS CRINGE REDDIT CRINGE"
+            msg = "\"Hurr, Cringe! Durr, Cringe! Cringe!\" \nIs that all you shitposting fucks can say?! \n\"ugh, " \
+                  "based based based cringe cringe cringe based based cringe cringe\" \nI feel like I'm in a fucking " \
+                  "asylum full of dementering old people, that can do nothing but repeat the same fucking words and " \
+                  "look like a fucking broken record! \n\"Cringe cringe cringe cringe! cringe based based! onions " \
+                  "onions soy! onions LOL onions! Cringe boomer Le zoomer! I am boomer?! No zoom zoom zoomies, " \
+                  "zoomer going zoomies!\" \nAGH I FUCKING HATE THE INTERNET SO GOD DAMN MUCH!! FUCK SHITPOSTING " \
+                  "HONEST GOD-FUCKING I HOPE YOUR MOTHER CHOKES ON HER OWN FECES IN HELL! YOU COCKSUCKER! \nOH BUT I " \
+                  "KNOW MY POST IS CRINGED ISN'T IT? CRINGE CRINGE CRINGEY-CRINGE BASED CRINGE REDDIT CRINGE BASED " \
+                  "REDDIT ONIONS BASED ONIONS CRINGE REDDIT CRINGE "
             await message.channel.send(msg)
             return
     return
