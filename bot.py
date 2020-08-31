@@ -53,6 +53,23 @@ def most_similar_string(query, list):
     return output
 
 
+def part_color(part):
+    if part == 3:
+        return discord.Color(0x49408B)  # purple
+    elif part == 4:
+        return discord.Color(0xC5EDEF)  # blue
+    elif part == 5:
+        return discord.Color(0xDEA143)  # gold
+    elif part == 6:
+        return discord.Color(0x4A7D52)  # green
+    elif part == 7:
+        return discord.Color(0xF8A6F3)  # pink
+    elif part == 8:
+        return discord.Color(0xF3FCFD)  # white
+    else:
+        return discord.Color.dark_gray()
+
+
 with open('stand_list.txt') as fp:
     line = fp.readline()
     count = 1
@@ -81,6 +98,10 @@ async def on_message(message):
     if discord_input.lower().startswith(command_prefix + "stand"):
         stand_query = remove_prefix(discord_input, (command_prefix + "stand "))
         stand = most_similar_string(stand_query, stand_list)
+        if stand == "Stairway to Heaven":
+            stand = "Made in Heaven"
+        elif stand == "THE WORLD (Part 7)" or stand == "THE WORLD (Diego)":
+            stand == "THE WORLD (Steel Ball Run)"
         stand_file = 'stand_stats/' + stand + '.txt'
         if path.exists(stand_file):
             with open(stand_file) as fp:
@@ -92,13 +113,13 @@ async def on_message(message):
                     line = fp.readline()
                     count += 1
                 embed = discord.Embed(
-                    title=stand_stat_list[1],
-                    description=list_to_linebroken_string(stand_stat_list[2:4]),
-                    color=discord.Color.purple()
+                    title=stand_stat_list[2],
+                    description=list_to_linebroken_string(stand_stat_list[3:5]),
+                    color=part_color(int(stand_stat_list[0]))
                 )
-                embed.set_thumbnail(url=stand_stat_list[0])
-                embed.add_field(name='Stats', value=list_to_linebroken_string(stand_stat_list[4:10]), inline=True)
-                embed.add_field(name='Abilities', value=list_to_linebroken_string(stand_stat_list[10:]), inline=True)
+                embed.set_thumbnail(url=stand_stat_list[1])
+                embed.add_field(name='Stats', value=list_to_linebroken_string(stand_stat_list[5:11]), inline=True)
+                embed.add_field(name='Abilities', value=list_to_linebroken_string(stand_stat_list[11:]), inline=True)
                 await message.channel.send(embed=embed)
         else:
             await message.channel.send(stand)
