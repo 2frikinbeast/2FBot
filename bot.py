@@ -1,6 +1,7 @@
 import os
 import discord
 import Levenshtein
+from os import path
 
 TOKEN = os.environ.get('2FBOT_TOKEN')
 
@@ -54,16 +55,28 @@ def most_similar_string(query, list):
 
 def stand_stats(param):
     stand = most_similar_string(param, stand_list)
-    return(stand)
+    stand_file = 'stand_stats/' + stand + '.txt'
+    if path.exists(stand_file):
+        with open(stand_file) as fp:
+            stand_stat_list = []
+            line = fp.readline()
+            count = 1
+            while line:
+                stand_stat_list.append(remove_suffix(line, '\n'))
+                line = fp.readline()
+                count += 1
+        return list_to_linebroken_string(stand_stat_list)
+    else:
+        return (stand)
 
 
 with open('stand_list.txt') as fp:
     line = fp.readline()
-    cnt = 1
+    count = 1
     while line:
         stand_list.append(remove_suffix(line, '\n'))
         line = fp.readline()
-        cnt += 1
+        count += 1
 
 
 @client.event
@@ -86,12 +99,15 @@ async def on_message(message):
         stand_query = remove_prefix(discord_input, (command_prefix + "stand "))
         await message.channel.send(stand_stats(stand_query))
 
-    for i in cringe_words:
-        if i in discord_input.lower():
-            msg = list_to_linebroken_string(cringe_copypasta)
-            await message.channel.send(msg)
-            return
-    return
+    if 'based on' in discord_input.lower():
+        return
+    else:
+        for i in cringe_words:
+            if i in discord_input.lower():
+                msg = list_to_linebroken_string(cringe_copypasta)
+                await message.channel.send(msg)
+                return
+        return
 
 
 @client.event
