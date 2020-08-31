@@ -53,23 +53,6 @@ def most_similar_string(query, list):
     return output
 
 
-def stand_stats(param):
-    stand = most_similar_string(param, stand_list)
-    stand_file = 'stand_stats/' + stand + '.txt'
-    if path.exists(stand_file):
-        with open(stand_file) as fp:
-            stand_stat_list = []
-            line = fp.readline()
-            count = 1
-            while line:
-                stand_stat_list.append(remove_suffix(line, '\n'))
-                line = fp.readline()
-                count += 1
-        return list_to_linebroken_string(stand_stat_list)
-    else:
-        return (stand)
-
-
 with open('stand_list.txt') as fp:
     line = fp.readline()
     count = 1
@@ -97,7 +80,28 @@ async def on_message(message):
 
     if discord_input.lower().startswith(command_prefix + "stand"):
         stand_query = remove_prefix(discord_input, (command_prefix + "stand "))
-        await message.channel.send(stand_stats(stand_query))
+        stand = most_similar_string(stand_query, stand_list)
+        stand_file = 'stand_stats/' + stand + '.txt'
+        if path.exists(stand_file):
+            with open(stand_file) as fp:
+                stand_stat_list = []
+                line = fp.readline()
+                count = 1
+                while line:
+                    stand_stat_list.append(remove_suffix(line, '\n'))
+                    line = fp.readline()
+                    count += 1
+                embed = discord.Embed(
+                    title=stand_stat_list[1],
+                    description=list_to_linebroken_string(stand_stat_list[2:4]),
+                    color=discord.Color.purple()
+                )
+                embed.set_thumbnail(url=stand_stat_list[0])
+                embed.add_field(name='Stats', value=list_to_linebroken_string(stand_stat_list[4:10]), inline=True)
+                embed.add_field(name='Abilities', value=list_to_linebroken_string(stand_stat_list[10:]), inline=True)
+                await message.channel.send(embed=embed)
+        else:
+            await message.channel.send(stand)
 
     if 'based on' in discord_input.lower():
         return
