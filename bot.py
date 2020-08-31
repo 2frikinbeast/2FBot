@@ -1,5 +1,6 @@
 import os
 import discord
+import Levenshtein
 
 TOKEN = os.environ.get('2FBOT_TOKEN')
 
@@ -41,8 +42,19 @@ def remove_suffix(text, suffix):
     return text
 
 
+def most_similar_string(query, list):
+    similarity_min = 10000
+    output = ""
+    for item in list:
+        if Levenshtein.distance(query, item) < similarity_min:
+            similarity_min = Levenshtein.distance(query, item)
+            output = item
+    return output
+
+
 def stand_stats(param):
-    return
+    stand = most_similar_string(param, stand_list)
+    return(stand)
 
 
 with open('stand_list.txt') as fp:
