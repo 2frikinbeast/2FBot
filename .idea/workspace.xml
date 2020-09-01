@@ -2,16 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="75a60c30-60aa-4046-a3ae-a021c5631e18" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/stand_stats/Death Thirteen.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/stand_stats/Empress.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/stand_stats/Geb.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/stand_stats/High Priestess.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/stand_stats/Judgement.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/stand_stats/Justice.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/stand_stats/Khnum.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/stand_stats/Lovers.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/stand_stats/Sun.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/stand_stats/Wheel of Fortune.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
