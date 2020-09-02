@@ -254,7 +254,7 @@ async def on_message(message):
 
     if 'based on' in discord_input.lower():
         return
-    else:
+    elif message.guild == "Royal Rards":
         for i in cringe_words:
             if i in discord_input.lower():
                 msg = list_to_linebroken_string(cringe_copypasta)
