@@ -1,3 +1,5 @@
+import datetime
+from datetime import datetime
 import os
 import discord
 import Levenshtein
@@ -20,6 +22,7 @@ cringe_copypasta = ["\"Hurr, Cringe! Durr, Cringe! Cringe!\"",
                     "YOUR MOTHER CHOKES ON HER OWN FECES IN HELL! YOU COCKSUCKER!",
                     "OH BUT I KNOW MY POST IS CRINGED ISN'T IT? CRINGE CRINGE CRINGEY-CRINGE BASED CRINGE REDDIT "
                     "CRINGE BASED REDDIT ONIONS BASED ONIONS CRINGE REDDIT CRINGE"]
+cringe_copypasta_cooldown = 300 #cooldown in seconds
 command_list = ["help", "hello", "stand <stand name>"]
 stand_list = []
 stand_aliases = {
@@ -131,6 +134,9 @@ parts = {"3": "*Stardust Crusaders*",
          "7": "*Steel Ball Run*",
          "8": "*Steel Ball Run*"}
 
+def current_time():
+    return datetime.utcnow()
+
 
 def list_to_linebroken_string(string_list):
     output = ""
@@ -208,11 +214,13 @@ def number_to_part(param):
 @client.event
 async def on_message(message):
     # we do not want the bot to reply to itself
+
+    global time_last_run
     if message.author == client.user:
         return
     else:
         discord_input = message.content
-        print(discord_input)
+        print(str(message.author) + " in " + str(message.guild) + ": " + str(discord_input))
 
     if discord_input.lower() == (command_prefix + "help"):
         msg = "Command list:\n" + list_to_linebroken_string(command_list)
@@ -254,12 +262,20 @@ async def on_message(message):
 
     if 'based on' in discord_input.lower():
         return
-    elif message.guild == "Royal Rards":
+    elif str(message.guild) == "Royal Rards":
         for i in cringe_words:
             if i in discord_input.lower():
-                msg = list_to_linebroken_string(cringe_copypasta)
-                await message.channel.send(msg)
-                return
+                try:
+                    if (datetime.utcnow() - time_last_run).total_seconds() >= cringe_copypasta_cooldown:
+                        time_last_run = datetime.utcnow()
+                        msg = list_to_linebroken_string(cringe_copypasta)
+                        await message.channel.send(msg)
+                    else:
+                        return
+                except NameError:
+                    time_last_run = datetime.utcnow()
+                    msg = list_to_linebroken_string(cringe_copypasta)
+                    await message.channel.send(msg)
         return
 
 
