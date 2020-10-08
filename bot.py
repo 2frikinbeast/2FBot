@@ -25,7 +25,7 @@ cringe_copypasta = ["\"Hurr, Cringe! Durr, Cringe! Cringe!\"",
                     "OH BUT I KNOW MY POST IS CRINGED ISN'T IT? CRINGE CRINGE CRINGEY-CRINGE BASED CRINGE REDDIT "
                     "CRINGE BASED REDDIT ONIONS BASED ONIONS CRINGE REDDIT CRINGE"]
 cringe_copypasta_cooldown = 300  # cooldown in seconds
-command_list = ["help", "hello", "stand <stand name>", "mtgrule <rule number or \"random\">"]
+command_list = ["help", "invite", "hello", "stand <stand name>", "mtgrule <rule number or \"random\">"]
 stand_list = []
 stand_aliases = {
     "Stairway to Heaven": "Made in Heaven",
