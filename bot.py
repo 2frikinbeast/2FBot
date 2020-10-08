@@ -252,7 +252,7 @@ async def on_message(message):
         msg = 'Hello {0.author.mention}'.format(message)
         await message.channel.send(msg)
 
-    if discord._input.lower() == (command_prefix + "invite"):
+    if discord_input.lower() == (command_prefix + "invite"):
         await message.channel.send("https://discord.com/oauth2/authorize?client_id=532326343753596938&scope=bot")
 
     if discord_input.lower().startswith(command_prefix + "mtgrule"):
