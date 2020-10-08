@@ -1,8 +1,10 @@
 import datetime
+import random
 from datetime import datetime
 import os
 import discord
 import Levenshtein
+import re
 from os import path
 
 TOKEN = os.environ.get('2FBOT_TOKEN')
@@ -22,7 +24,7 @@ cringe_copypasta = ["\"Hurr, Cringe! Durr, Cringe! Cringe!\"",
                     "YOUR MOTHER CHOKES ON HER OWN FECES IN HELL! YOU COCKSUCKER!",
                     "OH BUT I KNOW MY POST IS CRINGED ISN'T IT? CRINGE CRINGE CRINGEY-CRINGE BASED CRINGE REDDIT "
                     "CRINGE BASED REDDIT ONIONS BASED ONIONS CRINGE REDDIT CRINGE"]
-cringe_copypasta_cooldown = 300 #cooldown in seconds
+cringe_copypasta_cooldown = 300  # cooldown in seconds
 command_list = ["help", "hello", "stand <stand name>"]
 stand_list = []
 stand_aliases = {
@@ -134,6 +136,7 @@ parts = {"3": "*Stardust Crusaders*",
          "7": "*Steel Ball Run*",
          "8": "*Steel Ball Run*"}
 
+
 def current_time():
     return datetime.utcnow()
 
@@ -211,6 +214,25 @@ def number_to_part(param):
         return param
 
 
+def find_rule(rule):
+    file = open("MagicCompRules.txt", encoding="utf8")
+    if rule.lower() == "random":
+        lines = file.read().splitlines()
+        random_rule = ""
+        while not re.match(r"[0-9][0-9][0-9][.][0-9]+[a-z]+", random_rule):
+            random_rule = random.choice(lines)
+        return random_rule
+    else:
+        line = file.readline()
+        count = 1
+        while line:
+            if line.startswith(rule):
+                return line
+            line = file.readline()
+            count += 1
+    return "Rule " + rule + " could not be found"
+
+
 @client.event
 async def on_message(message):
     # we do not want the bot to reply to itself
@@ -229,6 +251,12 @@ async def on_message(message):
     if discord_input.lower() == (command_prefix + "hello"):
         msg = 'Hello {0.author.mention}'.format(message)
         await message.channel.send(msg)
+
+    if discord_input.lower().startswith(command_prefix + "mtgrule"):
+        print("command received")
+        rule_query = remove_prefix(discord_input.lower(), (command_prefix + "mtgrule "))
+        print(rule_query)
+        await message.channel.send(find_rule(rule_query))
 
     if discord_input.lower().startswith(command_prefix + "stand"):
         stand_query = remove_prefix(discord_input, (command_prefix + "stand "))
