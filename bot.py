@@ -157,7 +157,7 @@ def save_dict_to_pkl(input_dict, file_path):
         raise FileNotFoundError
 
 
-def add_to_pkl_dictionary(input_dict, file_path):
+def merge_to_pkl_dictionary(input_dict, file_path):
     try:
         new_dict = load_dict_from_plk(file_path)
         new_dict.update(input_dict)
@@ -178,9 +178,8 @@ def get_bot_prefix(server_id):
 def set_bot_prefix(server_id, new_prefix):
     config_file_path = "server_config/" + str(server_id) + ".pkl"
     try:
-        config = load_dict_from_plk(config_file_path)
-        config["prefix"] = new_prefix
-        save_dict_to_pkl(config, config_file_path)
+        prefix_dict = {"prefix": new_prefix}
+        merge_to_pkl_dictionary(prefix_dict, config_file_path)
     except FileNotFoundError:
         config = {"prefix": new_prefix}
         save_dict_to_pkl(config, config_file_path)
@@ -414,11 +413,10 @@ async def on_message(message):
 @client.event
 async def on_ready():
     print('Logged in as')
-    print(client.user.name)
-    print(client.user.id)
+    print(str(client.user.name) + " (" + str(client.user.id) + ")")
     print('Servers connected to:')
     for guild in client.guilds:
-        print(guild.name)
+        print(str(guild.name) + " (" + str(guild.id) +")")
     print('------')
 
 
