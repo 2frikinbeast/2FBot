@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="75a60c30-60aa-4046-a3ae-a021c5631e18" name="Default Changelist" comment="" />
+    <list default="true" id="75a60c30-60aa-4046-a3ae-a021c5631e18" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/server_config/282713731593535489.pkl" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/server_config/501837363228704768.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bot.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot.py" afterDir="false" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -186,7 +191,28 @@
       <option name="project" value="LOCAL" />
       <updated>1602136074151</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="up-to-date as of 8/31/20">
+      <created>1602136389465</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1602136389465</updated>
+    </task>
+    <task id="LOCAL-00008" summary="up-to-date as of 8/31/20">
+      <created>1602136406757</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1602136406757</updated>
+    </task>
+    <task id="LOCAL-00009" summary="up-to-date as of 8/31/20">
+      <created>1602136465094</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1602136465094</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -213,13 +239,18 @@
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/bot.py</url>
-          <line>196</line>
+          <line>218</line>
           <option name="timeStamp" value="6" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/bot.py</url>
-          <line>130</line>
+          <line>131</line>
           <option name="timeStamp" value="7" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/bot.py</url>
+          <line>178</line>
+          <option name="timeStamp" value="8" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

@@ -1,4 +1,5 @@
 import datetime
+import pickle
 import random
 from datetime import datetime
 import os
@@ -11,7 +12,7 @@ TOKEN = os.environ.get('2FBOT_TOKEN')
 
 client = discord.Client()
 
-command_prefix = "!!"
+default_prefix = "!!"
 cringe_words = ["cringe", "based"]
 cringe_copypasta = ["\"Hurr, Cringe! Durr, Cringe! Cringe!\"",
                     "Is that all you shitposting fucks can say?!",
@@ -137,6 +138,27 @@ parts = {"3": "*Stardust Crusaders*",
          "8": "*Steel Ball Run*"}
 
 
+def get_bot_prefix(server_id):
+    try:
+        with open("server_config/" + str(server_id) + ".pkl", "rb") as config_file:
+            config = dict(pickle.load(config_file))
+            config_file.close()
+            return config["prefix"]
+    except:
+        return default_prefix
+
+def set_bot_prefix(server_id, new_prefix):
+    try:
+        with open("server_config/" + str(server_id) + ".pkl", "wb") as config_file:
+            config = dict(pickle.load(config_file))
+            config["prefix"] = new_prefix
+            pickle.dump(config, config_file)
+            config_file.close()
+    except:
+        config_file = open("server_config/" + str(server_id) + ".pkl", "wb")
+        config = {"prefix": new_prefix}
+        pickle.dump(config, config_file)
+
 def current_time():
     return datetime.utcnow()
 
@@ -244,23 +266,30 @@ async def on_message(message):
         discord_input = message.content
         print(str(message.author) + " in " + str(message.guild) + ": " + str(discord_input))
 
-    if discord_input.lower() == (command_prefix + "help"):
+    if discord_input.lower().startswith(get_bot_prefix(str(message.guild.id)) + "set_prefix "):
+        new_prefix = remove_prefix(discord_input.lower(), get_bot_prefix(str(message.guild.id)) + "set_prefix ")
+        set_bot_prefix(str(message.guild.id), new_prefix)
+        msg = "Prefix changed to " + new_prefix + " for server " + str(message.guild.id) + "(" + message.guild + ")"
+        await message.channel.send(msg)
+
+    if discord_input.lower() == (get_bot_prefix(str(message.guild.id)) + "help"):
         msg = "Command list:\n" + list_to_linebroken_string(command_list)
         await message.channel.send(msg)
 
-    if discord_input.lower() == (command_prefix + "hello"):
+    if discord_input.lower() == (get_bot_prefix(str(message.guild.id)) + "hello"):
         msg = 'Hello {0.author.mention}'.format(message)
         await message.channel.send(msg)
 
-    if discord_input.lower() == (command_prefix + "invite"):
-        await message.channel.send(" Use this link to invite 2FBot to a server: https://discord.com/oauth2/authorize?client_id=532326343753596938&scope=bot")
+    if discord_input.lower() == (get_bot_prefix(str(message.guild.id)) + "invite"):
+        await message.channel.send(
+            " Use this link to invite 2FBot to a server: https://discord.com/oauth2/authorize?client_id=532326343753596938&scope=bot")
 
-    if discord_input.lower().startswith(command_prefix + "mtgrule"):
-        rule_query = remove_prefix(discord_input.lower(), (command_prefix + "mtgrule "))
+    if discord_input.lower().startswith(get_bot_prefix(str(message.guild.id)) + "mtgrule"):
+        rule_query = remove_prefix(discord_input.lower(), (get_bot_prefix(str(message.guild.id)) + "mtgrule "))
         await message.channel.send(find_rule(rule_query))
 
-    if discord_input.lower().startswith(command_prefix + "stand"):
-        stand_query = remove_prefix(discord_input, (command_prefix + "stand "))
+    if discord_input.lower().startswith(get_bot_prefix(str(message.guild.id)) + "stand"):
+        stand_query = remove_prefix(discord_input, (get_bot_prefix(str(message.guild.id)) + "stand "))
         stand = check_stand_alias(most_similar_string(stand_query, stand_list))
         stand_file = 'stand_stats/' + stand + '.txt'
         if path.exists(stand_file):
