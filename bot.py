@@ -267,9 +267,17 @@ async def on_message(message):
         print(str(message.author) + " in " + str(message.guild) + ": " + str(discord_input))
 
     if discord_input.lower().startswith(get_bot_prefix(str(message.guild.id)) + "set_prefix "):
-        new_prefix = remove_prefix(discord_input.lower(), get_bot_prefix(str(message.guild.id)) + "set_prefix ")
-        set_bot_prefix(str(message.guild.id), new_prefix)
-        msg = "Prefix changed to " + new_prefix + " for server " + str(message.guild.id) + "(" + message.guild + ")"
+        manage_guild_permission = False
+        message_len = 0
+        while message_len < len(message.author.roles):
+            if discord.Permissions(message.author.roles[message_len]._permissions).manage_guild:
+                new_prefix = remove_prefix(discord_input.lower(), get_bot_prefix(str(message.guild.id)) + "set_prefix ")
+                set_bot_prefix(str(message.guild.id), new_prefix)
+                msg = "Prefix changed to " + new_prefix + " for server " + str(message.guild.id) + " (" + str(message.guild) + ")"
+                break
+            else:
+                message_len += 1
+                msg = "You require MANAGE_SERVER permssions to run this command"
         await message.channel.send(msg)
 
     if discord_input.lower() == (get_bot_prefix(str(message.guild.id)) + "help"):
