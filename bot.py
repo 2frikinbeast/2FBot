@@ -12,7 +12,7 @@ TOKEN = os.environ.get('2FBOT_TOKEN')
 
 client = discord.Client()
 
-default_prefix = "!!"
+DEFAULT_PREFIX = "!!"
 cringe_words = ["cringe", "based"]
 cringe_copypasta = ["\"Hurr, Cringe! Durr, Cringe! Cringe!\"",
                     "Is that all you shitposting fucks can say?!",
@@ -138,26 +138,53 @@ parts = {"3": "*Stardust Crusaders*",
          "8": "*Steel Ball Run*"}
 
 
-def get_bot_prefix(server_id):
+def load_dict_from_plk(file_path):
     try:
-        with open("server_config/" + str(server_id) + ".pkl", "rb") as config_file:
-            config = dict(pickle.load(config_file))
-            config_file.close()
-            return config["prefix"]
-    except:
-        return default_prefix
+        with open(file_path, "rb") as load_file:
+            output = dict(pickle.load(load_file))
+            load_file.close()
+        return output
+    except FileNotFoundError:
+        raise FileNotFoundError
+
+
+def save_dict_to_pkl(input_dict, file_path):
+    try:
+        with open(file_path, "wb") as save_file:
+            pickle.dump(input_dict, save_file)
+            save_file.close()
+    except FileNotFoundError:
+        raise FileNotFoundError
+
+
+def add_to_pkl_dictionary(input_dict, file_path):
+    try:
+        new_dict = load_dict_from_plk(file_path)
+        new_dict.update(input_dict)
+        save_dict_to_pkl(new_dict, file_path)
+    except FileNotFoundError:
+        save_dict_to_pkl(new_dict)
+
+
+def get_bot_prefix(server_id):
+    config_file_path = "server_config/" + str(server_id) + ".pkl"
+    try:
+        config = load_dict_from_plk(config_file_path)
+        return config["prefix"]
+    except FileNotFoundError:
+        return DEFAULT_PREFIX
+
 
 def set_bot_prefix(server_id, new_prefix):
+    config_file_path = "server_config/" + str(server_id) + ".pkl"
     try:
-        with open("server_config/" + str(server_id) + ".pkl", "wb") as config_file:
-            config = dict(pickle.load(config_file))
-            config["prefix"] = new_prefix
-            pickle.dump(config, config_file)
-            config_file.close()
-    except:
-        config_file = open("server_config/" + str(server_id) + ".pkl", "wb")
+        config = load_dict_from_plk(config_file_path)
+        config["prefix"] = new_prefix
+        save_dict_to_pkl(config, config_file_path)
+    except FileNotFoundError:
         config = {"prefix": new_prefix}
-        pickle.dump(config, config_file)
+        save_dict_to_pkl(config, config_file_path)
+
 
 def current_time():
     return datetime.utcnow()
@@ -255,6 +282,25 @@ def find_rule(rule):
     return "Rule " + rule + " could not be found"
 
 
+def number_to_month(month):
+    switcher = {
+        1: "January",
+        2: "February",
+        3: "March",
+        4: "April",
+        5: "May",
+        6: "June",
+        7: "July",
+        8: "August",
+        9: "September",
+        10: "October",
+        11: "November",
+        12: "December"
+    }
+    return switcher.get(int(month), "Invalid month")
+    pass
+
+
 @client.event
 async def on_message(message):
     # we do not want the bot to reply to itself
@@ -266,6 +312,10 @@ async def on_message(message):
         discord_input = message.content
         print(str(message.author) + " in " + str(message.guild) + ": " + str(discord_input))
 
+    if "get_prefix" in discord_input.lower():
+        msg = "`" + get_bot_prefix(message.guild.id) + "` is the current 2FBot prefix for " + str(message.guild)
+        await message.channel.send(msg)
+
     if discord_input.lower().startswith(get_bot_prefix(str(message.guild.id)) + "set_prefix "):
         manage_guild_permission = False
         message_len = 0
@@ -273,12 +323,30 @@ async def on_message(message):
             if discord.Permissions(message.author.roles[message_len]._permissions).manage_guild:
                 new_prefix = remove_prefix(discord_input.lower(), get_bot_prefix(str(message.guild.id)) + "set_prefix ")
                 set_bot_prefix(str(message.guild.id), new_prefix)
-                msg = "Prefix changed to " + new_prefix + " for server " + str(message.guild.id) + " (" + str(message.guild) + ")"
+                msg = "Prefix changed to `" + new_prefix + "` for server " + str(message.guild.id) + " (" + str(
+                    message.guild) + ")"
                 break
             else:
                 message_len += 1
-                msg = "You require MANAGE_SERVER permssions to run this command"
+                msg = "You require \"Manage Server\" permissions to run this command"
         await message.channel.send(msg)
+
+    if discord_input.lower().startswith(get_bot_prefix(str(message.guild.id)) + "birthday"):
+        date = remove_prefix(discord_input.lower(), get_bot_prefix(str(message.guild.id)) + "birthday ")
+        if discord_input.lower() == get_bot_prefix(str(message.guild.id)) + "birthday":
+            print("peepee")
+            # refresh birthday role? idk
+        elif re.match(r"([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))", date):
+            year = date[0:4]
+            month = date[5:7]
+            day = remove_prefix(date[8:10], "0")
+            month_string = number_to_month(month)
+            try:
+                await message.channel.send("Birthday parsed as " + day + " " + month_string + " " + year)
+            except:
+                await message.channel.send("That date is not valid. Input it in format `yyyy-mm-dd`")
+        else:
+            await message.channel.send("That date is not valid. Input it in format `yyyy-mm-dd`")
 
     if discord_input.lower() == (get_bot_prefix(str(message.guild.id)) + "help"):
         msg = "Command list:\n" + list_to_linebroken_string(command_list)
@@ -326,11 +394,9 @@ async def on_message(message):
             else:
                 await message.channel.send(stand)
 
-    if 'based on' in discord_input.lower():
-        return
-    elif str(message.guild) == "Royal Rards":
+    if str(message.guild.id) == "501837363228704768":
         for i in cringe_words:
-            if i in discord_input.lower():
+            if i in discord_input.lower() and not "based on" in discord_input.lower():
                 try:
                     if (datetime.utcnow() - time_last_run).total_seconds() >= cringe_copypasta_cooldown:
                         time_last_run = datetime.utcnow()
