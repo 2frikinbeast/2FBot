@@ -163,7 +163,7 @@ def merge_to_pkl_dictionary(input_dict, file_path):
         new_dict.update(input_dict)
         save_dict_to_pkl(new_dict, file_path)
     except FileNotFoundError:
-        save_dict_to_pkl(new_dict)
+        save_dict_to_pkl(input_dict, file_path)
 
 
 def get_bot_prefix(server_id):
