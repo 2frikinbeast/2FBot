@@ -353,19 +353,24 @@ async def on_message(message):
                 birthdays_dict = load_dict_from_plk("server_config/birthday/" + str(message.guild.id) + ".pkl")
                 user_birthday = string_to_ymd(str(birthdays_dict[str(message.author.id)]))
                 if user_birthday["year"] == None:
-                    await message.channel.send("Your birthday is " + str(user_birthday["month_name"]) + " " + str(user_birthday["day"]) + " in unknown year")
+                    await message.channel.send("Your birthday is " + str(user_birthday["month_name"]) + " " + str(
+                        user_birthday["day"]) + " in unknown year")
                 else:
-                    await message.channel.send("Your birthday is " + str(user_birthday["month_name"]) + " " + str(user_birthday["day"]) + " " + str(user_birthday["year"]))
+                    await message.channel.send("Your birthday is " + str(user_birthday["month_name"]) + " " + str(
+                        user_birthday["day"]) + " " + str(user_birthday["year"]))
             except (KeyError, FileNotFoundError):
                 await message.channel.send("2FBot does not know your birthday. Use the command `" + get_bot_prefix(
                     message.guild.id) + "birthday yyyy-mm-dd` to enter your birthday. `mm-dd` is also accepted.")
-        elif re.match(r"([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))", date):
+        elif re.match(r"([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))", date):  # yyyy-mm-dd
             user_birthday = string_to_ymd(date)
-            await message.channel.send("Birthday parsed as " + user_birthday["month_name"] + " " + user_birthday["day"] + " " + user_birthday["year"])
-            user_birthday = datetime.datetime(int(user_birthday["year"]), int(user_birthday["month"]), int(user_birthday["day"]))
+            await message.channel.send(
+                "Birthday parsed as " + user_birthday["month_name"] + " " + user_birthday["day"] + " " + user_birthday[
+                    "year"])
+            user_birthday = datetime.datetime(int(user_birthday["year"]), int(user_birthday["month"]),
+                                              int(user_birthday["day"]))
             user_birthday_dict = {str(message.author.id): user_birthday}
             merge_to_pkl_dictionary(user_birthday_dict, "server_config/birthday/" + str(message.guild.id) + ".pkl")
-        elif re.match(r"^(0?[1-9]|1[0-2])-(0?[1-9]|[12][0-9]|3[01])$", date):
+        elif re.match(r"^(0?[1-9]|1[0-2])-(0?[1-9]|[12][0-9]|3[01])$", date):  # mm-dd
             month = date[0:2]
             day = remove_prefix(date[3:5], "0")
             month_string = number_to_month(month)
