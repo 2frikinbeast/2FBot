@@ -1,12 +1,12 @@
 import datetime
+import os
 import pickle
 import random
-from datetime import datetime
-import os
-import discord
-import Levenshtein
 import re
 from os import path
+
+import Levenshtein
+import discord
 
 TOKEN = os.environ.get('2FBOT_TOKEN')
 
@@ -300,6 +300,22 @@ def number_to_month(month):
     pass
 
 
+def string_to_ymd(date_string):
+    if date_string[0:4] == "6969":
+        year = None
+    else:
+        year = date_string[0:4]
+    month = date_string[5:7]
+    day = remove_prefix(date_string[8:10], "0")
+    date_dictionary = {
+        "year": year,
+        "month": month,
+        "month_name": number_to_month(month),
+        "day": day
+    }
+    return date_dictionary
+
+
 @client.event
 async def on_message(message):
     # we do not want the bot to reply to itself
@@ -333,19 +349,32 @@ async def on_message(message):
     if discord_input.lower().startswith(get_bot_prefix(str(message.guild.id)) + "birthday"):
         date = remove_prefix(discord_input.lower(), get_bot_prefix(str(message.guild.id)) + "birthday ")
         if discord_input.lower() == get_bot_prefix(str(message.guild.id)) + "birthday":
-            print("peepee")
-            # refresh birthday role? idk
-        elif re.match(r"([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))", date):
-            year = date[0:4]
-            month = date[5:7]
-            day = remove_prefix(date[8:10], "0")
-            month_string = number_to_month(month)
             try:
-                await message.channel.send("Birthday parsed as " + day + " " + month_string + " " + year)
-            except:
-                await message.channel.send("That date is not valid. Input it in format `yyyy-mm-dd`")
+                birthdays_dict = load_dict_from_plk("server_config/birthday/" + str(message.guild.id) + ".pkl")
+                user_birthday = string_to_ymd(str(birthdays_dict[str(message.author.id)]))
+                if user_birthday["year"] == None:
+                    await message.channel.send("Your birthday is " + str(user_birthday["month_name"]) + " " + str(user_birthday["day"]) + " in unknown year")
+                else:
+                    await message.channel.send("Your birthday is " + str(user_birthday["month_name"]) + " " + str(user_birthday["day"]) + " " + str(user_birthday["year"]))
+            except (KeyError, FileNotFoundError):
+                await message.channel.send("2FBot does not know your birthday. Use the command `" + get_bot_prefix(
+                    message.guild.id) + "birthday yyyy-mm-dd` to enter your birthday. `mm-dd` is also accepted.")
+        elif re.match(r"([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))", date):
+            user_birthday = string_to_ymd(date)
+            await message.channel.send("Birthday parsed as " + user_birthday["month_name"] + " " + user_birthday["day"] + " " + user_birthday["year"])
+            user_birthday = datetime.datetime(int(user_birthday["year"]), int(user_birthday["month"]), int(user_birthday["day"]))
+            user_birthday_dict = {str(message.author.id): user_birthday}
+            merge_to_pkl_dictionary(user_birthday_dict, "server_config/birthday/" + str(message.guild.id) + ".pkl")
+        elif re.match(r"^(0?[1-9]|1[0-2])-(0?[1-9]|[12][0-9]|3[01])$", date):
+            month = date[0:2]
+            day = remove_prefix(date[3:5], "0")
+            month_string = number_to_month(month)
+            await message.channel.send("Birthday parsed as " + month_string + " " + day)
+            user_birthday = datetime.datetime(6969, int(month), int(day))
+            user_birthday_dict = {str(message.author.id): user_birthday}
+            merge_to_pkl_dictionary(user_birthday_dict, "server_config/birthday/" + str(message.guild.id) + ".pkl")
         else:
-            await message.channel.send("That date is not valid. Input it in format `yyyy-mm-dd`")
+            await message.channel.send("That date is not valid. Input it in format `yyyy-mm-dd` or `mm-dd`")
 
     if discord_input.lower() == (get_bot_prefix(str(message.guild.id)) + "help"):
         msg = "Command list:\n" + list_to_linebroken_string(command_list)
@@ -416,7 +445,7 @@ async def on_ready():
     print(str(client.user.name) + " (" + str(client.user.id) + ")")
     print('Servers connected to:')
     for guild in client.guilds:
-        print(str(guild.name) + " (" + str(guild.id) +")")
+        print(str(guild.name) + " (" + str(guild.id) + ")")
     print('------')
 
 
