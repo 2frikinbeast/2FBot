@@ -346,6 +346,11 @@ async def on_message(message):
                 msg = "You require \"Manage Server\" permissions to run this command"
         await message.channel.send(msg)
 
+    if discord_input.lower().startswith(get_bot_prefix(str(message.guild.id)) + "random"):
+        input = remove_prefix(discord_input.lower(), get_bot_prefix(str(message.guild.id)) + "random")
+        rand_list = input.split(" ")
+        await message.channel.send(random.choice(rand_list))
+
     if discord_input.lower().startswith(get_bot_prefix(str(message.guild.id)) + "birthday"):
         date = remove_prefix(discord_input.lower(), get_bot_prefix(str(message.guild.id)) + "birthday ")
         if discord_input.lower() == get_bot_prefix(str(message.guild.id)) + "birthday":
