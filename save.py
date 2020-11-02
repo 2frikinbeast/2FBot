@@ -1,7 +1,7 @@
 import pickle
 
 
-def load_dict_from_plk(file_path):
+def load_dict_from_pkl(file_path):
     try:
         with open(file_path, "rb") as load_file:
             output = dict(pickle.load(load_file))
@@ -22,7 +22,7 @@ def save_dict_to_pkl(input_dict, file_path):
 
 def merge_to_pkl_dictionary(input_dict, file_path):
     try:
-        new_dict = load_dict_from_plk(file_path)
+        new_dict = load_dict_from_pkl(file_path)
         new_dict.update(input_dict)
         save_dict_to_pkl(new_dict, file_path)
     except FileNotFoundError:

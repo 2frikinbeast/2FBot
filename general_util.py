@@ -2,15 +2,38 @@ from datetime import datetime
 
 import Levenshtein
 
+from save import *
+
+DEFAULT_PREFIX = "!!"
+
+
+def get_bot_prefix(server_id: str):
+    config_file_path = "server_config/" + str(server_id) + ".pkl"
+    try:
+        config = load_dict_from_pkl(config_file_path)
+        return config["prefix"]
+    except FileNotFoundError:
+        return DEFAULT_PREFIX
+
+
+def set_bot_prefix(server_id: str, new_prefix: str):
+    config_file_path = "server_config/" + str(server_id) + ".pkl"
+    try:
+        prefix_dict = {"prefix": new_prefix}
+        merge_to_pkl_dictionary(prefix_dict, config_file_path)
+    except FileNotFoundError:
+        config = {"prefix": new_prefix}
+        save_dict_to_pkl(config, config_file_path)
+
 
 def current_time():
     return datetime.utcnow()
 
 
-def list_to_linebroken_string(string_list):
+def list_to_string(string_list: list, separator: str):
     output = ""
     for item in string_list:
-        output += (item + "\n")
+        output += (item + separator)
     return output
 
 

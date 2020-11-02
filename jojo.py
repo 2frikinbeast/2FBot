@@ -1,6 +1,8 @@
 import discord
 
-from general_util import remove_suffix
+from bot import send_embed, send_message
+from general_util import remove_suffix, remove_prefix, get_bot_prefix, most_similar_string, list_to_string
+from os import path
 
 stand_list = []
 stand_aliases = {
@@ -144,6 +146,7 @@ def number_to_part(param):
     except KeyError:
         return param
 
+
 def update_stand_list():
     with open('stand_list.txt') as fp:
         line = fp.readline()
@@ -152,3 +155,35 @@ def update_stand_list():
             stand_list.append(remove_suffix(line, '\n'))
             line = fp.readline()
             count += 1
+
+
+def stand_stats(message: discord.Message):
+    update_stand_list()
+    stand_query = remove_prefix(message.content, (get_bot_prefix(str(message.guild.id)) + "stand "))
+    stand = check_stand_alias(most_similar_string(stand_query, stand_list))
+    stand_file = 'stand_stats/' + stand + '.txt'
+    if path.exists(stand_file):
+        with open(stand_file) as fp:
+            stand_stat_list = []
+            line = fp.readline()
+            count = 1
+            while line:
+                stand_stat_list.append(remove_suffix(line, '\n'))
+                line = fp.readline()
+                count += 1
+            description_text = list_to_string(
+                stand_stat_list[3:5], "\n") + "**First appears in:** " + number_to_part(stand_stat_list[0])
+            embed = discord.Embed(
+                title=stand_stat_list[2],
+                description=description_text,
+                color=part_color(stand_stat_list[0])
+            )
+            embed.set_thumbnail(url=stand_stat_list[1])
+            embed.add_field(name='Stats', value=list_to_string(stand_stat_list[5:11], "\n"), inline=True)
+            embed.add_field(name='Abilities', value=list_to_string(stand_stat_list[11:], "\n"), inline=True)
+            send_embed(message.channel, embed)
+    else:
+        if stand == "Flaccid Pancake":
+            send_message(message.channel, "Jesus fucking Christ, just search \"Limp Bizkit\"")
+        else:
+            send_message(message.channel, stand)
