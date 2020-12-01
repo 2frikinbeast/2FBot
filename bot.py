@@ -269,13 +269,13 @@ def find_rule(rule):
             random_rule = random.choice(lines)
         return random_rule
     else:
-        line = str(file.readline())
-        count = 1
-        while line:
-            if line.startswith(rule):
-                return line
-            line = file.readline()
-            count += 1
+        rule_line = str(file.readline())
+        rule_count = 1
+        while rule_line:
+            if rule_line.startswith(rule):
+                return rule_line
+            rule_line = file.readline()
+            rule_count += 1
     return "Rule " + rule + " could not be found"
 
 
