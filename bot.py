@@ -4,7 +4,6 @@ import pickle
 import random
 import re
 from os import path
-import math
 
 import Levenshtein
 import discord
@@ -220,20 +219,23 @@ def most_similar_string(query, search_list):
 
 
 def part_color(part_number):
-    part = int(part_number)
-    if part == 3:
-        return discord.Color(0x49408B)  # purple
-    elif part == 4:
-        return discord.Color(0xC5EDEF)  # blue
-    elif part == 5:
-        return discord.Color(0xDEA143)  # gold
-    elif part == 6:
-        return discord.Color(0x4A7D52)  # green
-    elif part == 7:
-        return discord.Color(0xF8A6F3)  # pink
-    elif part == 8:
-        return discord.Color(0xF3FCFD)  # white
-    else:
+    try:
+        part = int(part_number)
+        if part == 3:
+            return discord.Color(0x49408B)  # purple
+        elif part == 4:
+            return discord.Color(0xC5EDEF)  # blue
+        elif part == 5:
+            return discord.Color(0xDEA143)  # gold
+        elif part == 6:
+            return discord.Color(0x4A7D52)  # green
+        elif part == 7:
+            return discord.Color(0xF8A6F3)  # pink
+        elif part == 8:
+            return discord.Color(0xF3FCFD)  # white
+        else:
+            return discord.Color.dark_gray()
+    except:
         return discord.Color.dark_gray()
 
 
@@ -256,7 +258,7 @@ with open('stand_list.txt') as fp:
 def number_to_part(param):
     try:
         return parts[str(param)]
-    except KeyError:
+    except:
         return param
 
 
@@ -269,7 +271,7 @@ def find_rule(rule):
             random_rule = random.choice(lines)
         return random_rule
     else:
-        line = str(file.readline())
+        line = file.readline()
         count = 1
         while line:
             if line.startswith(rule):
@@ -344,70 +346,8 @@ async def on_message(message):
                 msg = "You require \"Manage Server\" permissions to run this command"
         await message.channel.send(msg)
 
-    if discord_input.lower().startswith(get_bot_prefix(str(message.guild.id)) + "secret_partners") and str(message.guild.id) == "706275564104843384":
-        player_list_string = remove_prefix(discord_input.lower(), get_bot_prefix(str(message.guild.id)) + "secret_partners ")
-        player_list_uncleaned = player_list_string.split(" ")
-        player_list = []
-        lone_wolf = ""
-        for player in player_list_uncleaned:
-            cleaned_user = remove_prefix(player, "<@!")
-            cleaned_user = remove_suffix(cleaned_user, ">")
-            player_list.append(cleaned_user)
-        num_teams = math.floor(len(player_list) / 2)
-        need_lone_wolf = not (len(player_list) % 2 == 0)
-        if need_lone_wolf:
-            await message.channel.send("Splitting " + player_list_string + " into " + str(
-                num_teams) + " teams with one lone wolf. Please ensure your DMs are open.")
-        else:
-            await message.channel.send("Splitting " + player_list_string + " into " + str(
-                num_teams) + " teams. Please ensure your DMs are open.")
-        teams = {}
-        chosen_players = []
-        i = 1
-        while i <= num_teams:
-            teams[i] = {"normal": "", "secret": ""}
-            i += 1
-        j = 1
-        while j <= len(player_list):
-            random_player = random.choice(player_list)
-            if not random_player in chosen_players:
-                try:
-                    if teams[math.ceil(j / 2)]["normal"] == "":
-                        teams[math.ceil(j / 2)]["normal"] = random_player
-                        chosen_players.append(random_player)
-                    else:
-                        teams[math.ceil(j / 2)]["secret"] = random_player
-                        chosen_players.append(random_player)
-                except KeyError:
-                    lone_wolf = random_player
-                    chosen_players.append(random_player)
-                j += 1
-        print(teams)
-        if not lone_wolf == "":
-            lone_wolf_user = client.get_user(int(lone_wolf))
-            try:
-                await lone_wolf_user.send("You are the lone wolf. Try to win the game by yourself!")
-            except discord.errors.HTTPException:
-                await message.channel.send("User <@!" + str(lone_wolf) + "> does not have open DMs!")
-        else:
-            print("There is no lone wolf.")
-        k = 1
-        while k <= len(teams):
-            normal_teammate = client.get_user(int(teams[k]["normal"]))
-            secret_teammate = client.get_user(int(teams[k]["secret"]))
-            secret_teammate_name = secret_teammate.name
-            try:
-                await normal_teammate.send("You are on a team with " + secret_teammate_name + ". Don't tell anyone!")
-            except discord.errors.HTTPException:
-                await message.channel.send("User <@!" + str(teams[k]["normal"]) + "> does not have open DMs!")
-            try:
-                await secret_teammate.send("You are on a team, but you don't know who your teammate is.")
-            except discord.errors.HTTPException:
-                await message.channel.send("User <@!" + str(teams[k]["secret"]) + "> does not have open DMs!")
-            k += 1
-
     if discord_input.lower().startswith(get_bot_prefix(str(message.guild.id)) + "random"):
-        input = remove_prefix(discord_input.lower(), get_bot_prefix(str(message.guild.id)) + "random ")
+        input = remove_prefix(discord_input.lower(), get_bot_prefix(str(message.guild.id)) + "random")
         rand_list = input.split(" ")
         await message.channel.send(random.choice(rand_list))
 
@@ -417,7 +357,7 @@ async def on_message(message):
             try:
                 birthdays_dict = load_dict_from_plk("server_config/birthday/" + str(message.guild.id) + ".pkl")
                 user_birthday = string_to_ymd(str(birthdays_dict[str(message.author.id)]))
-                if user_birthday["year"] is None:
+                if user_birthday["year"] == None:
                     await message.channel.send("Your birthday is " + str(user_birthday["month_name"]) + " " + str(
                         user_birthday["day"]) + " in unknown year")
                 else:
