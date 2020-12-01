@@ -323,7 +323,7 @@ async def on_message(message):
         return
     else:
         discord_input = message.content
-        print(str(message.author) + " in " + str(message.guild) + ": " + str(discord_input))
+        print(str(message.author) + " in " + str(message.guild) + ": " + str(discord_input) + " https://discord.com/channels/" + str(message.guild.id) + "/" + str(message.channel.id) + "/" + str(message.id))
 
     if "get_prefix" in discord_input.lower():
         msg = "`" + get_bot_prefix(message.guild.id) + "` is the current 2FBot prefix for " + str(message.guild)
