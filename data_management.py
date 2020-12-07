@@ -1,4 +1,4 @@
-from pandas.io import pickle
+import pickle
 
 
 def load_dict_from_plk(file_path):

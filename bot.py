@@ -163,6 +163,13 @@ def string_to_ymd(date_string):
     return date_dictionary
 
 
+def find_keyword(keyword_query, arg1 = "X", arg2 = "Y"):
+    if keyword_query == "equip" and arg1 != "X":
+        keyword_query = "equip2"
+    reminder_text = keywords[keyword_query]
+    reminder_text = reminder_text.replace("arg1", str(arg1)).replace("arg2", str(arg2))
+    return reminder_text
+
 @client.event
 async def on_message(message):
     # we do not want the bot to reply to itself
@@ -311,9 +318,21 @@ async def on_message(message):
         await message.channel.send(
             " Use this link to invite 2FBot to a server: https://discord.com/oauth2/authorize?client_id=532326343753596938&scope=bot")
 
-    if discord_input.lower().startswith(get_bot_prefix(str(message.guild.id)) + "mtgrule"):
-        rule_query = remove_prefix(discord_input.lower(), (get_bot_prefix(str(message.guild.id)) + "mtgrule "))
+    if discord_input.lower().startswith(get_bot_prefix(str(message.guild.id)) + "mtg_rule"):
+        rule_query = remove_prefix(discord_input.lower(), (get_bot_prefix(str(message.guild.id)) + "mtg_rule "))
         await message.channel.send(find_rule(rule_query))
+
+    if discord_input.lower().startswith(get_bot_prefix(str(message.guild.id)) + "mtg_keyword"):
+        keyword_query = remove_prefix(discord_input.lower(), (get_bot_prefix(str(message.guild.id)) + "mtg_keyword "))
+        query_list = keyword_query.split()
+        print(query_list)
+        try:
+            await message.channel.send(find_keyword(query_list[0], query_list[1], query_list[2]))
+        except IndexError:
+            try:
+                await message.channel.send(find_keyword(query_list[0], query_list[1]))
+            except IndexError:
+                await message.channel.send(find_keyword(query_list[0]))
 
     if discord_input.lower().startswith(get_bot_prefix(str(message.guild.id)) + "stand"):
         stand_query = remove_prefix(discord_input, (get_bot_prefix(str(message.guild.id)) + "stand "))
