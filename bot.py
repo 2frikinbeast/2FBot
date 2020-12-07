@@ -1,6 +1,5 @@
 import datetime
 import os
-import pickle
 import random
 import re
 from os import path
@@ -8,6 +7,8 @@ import math
 
 import Levenshtein
 import discord
+
+from data_management import *
 
 TOKEN = os.environ.get('2FBOT_TOKEN')
 
@@ -137,34 +138,6 @@ parts = {"3": "*Stardust Crusaders*",
          "6": "*Stone Ocean*",
          "7": "*Steel Ball Run*",
          "8": "*Steel Ball Run*"}
-
-
-def load_dict_from_plk(file_path):
-    try:
-        with open(file_path, "rb") as load_file:
-            output = dict(pickle.load(load_file))
-            load_file.close()
-        return output
-    except FileNotFoundError:
-        raise FileNotFoundError
-
-
-def save_dict_to_pkl(input_dict, file_path):
-    try:
-        with open(file_path, "wb") as save_file:
-            pickle.dump(input_dict, save_file)
-            save_file.close()
-    except FileNotFoundError:
-        raise FileNotFoundError
-
-
-def merge_to_pkl_dictionary(input_dict, file_path):
-    try:
-        new_dict = load_dict_from_plk(file_path)
-        new_dict.update(input_dict)
-        save_dict_to_pkl(new_dict, file_path)
-    except FileNotFoundError:
-        save_dict_to_pkl(input_dict, file_path)
 
 
 def get_bot_prefix(server_id):
@@ -323,7 +296,9 @@ async def on_message(message):
         return
     else:
         discord_input = message.content
-        print(str(message.author) + " in " + str(message.guild) + ": " + str(discord_input) + " https://discord.com/channels/" + str(message.guild.id) + "/" + str(message.channel.id) + "/" + str(message.id))
+        print(str(message.author) + " in " + str(message.guild) + ": " + str(
+            discord_input) + " https://discord.com/channels/" + str(message.guild.id) + "/" + str(
+            message.channel.id) + "/" + str(message.id))
 
     if "get_prefix" in discord_input.lower():
         msg = "`" + get_bot_prefix(message.guild.id) + "` is the current 2FBot prefix for " + str(message.guild)
@@ -344,8 +319,10 @@ async def on_message(message):
                 msg = "You require \"Manage Server\" permissions to run this command"
         await message.channel.send(msg)
 
-    if discord_input.lower().startswith(get_bot_prefix(str(message.guild.id)) + "secret_partners") and str(message.guild.id) == "706275564104843384":
-        player_list_string = remove_prefix(discord_input.lower(), get_bot_prefix(str(message.guild.id)) + "secret_partners ")
+    if discord_input.lower().startswith(get_bot_prefix(str(message.guild.id)) + "secret_partners") and str(
+            message.guild.id) == "706275564104843384":
+        player_list_string = remove_prefix(discord_input.lower(),
+                                           get_bot_prefix(str(message.guild.id)) + "secret_partners ")
         player_list_uncleaned = player_list_string.split(" ")
         player_list = []
         lone_wolf = ""
