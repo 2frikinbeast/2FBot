@@ -39,10 +39,10 @@ def current_time():
     return datetime.utcnow()
 
 
-def list_to_linebroken_string(string_list):
+def list_to_string(string_list, separator="\n"):
     output = ""
     for item in string_list:
-        output += (item + "\n")
+        output += (item + separator)
     return output
 
 
@@ -108,6 +108,31 @@ def number_to_part(param):
     except KeyError:
         return param
 
+def pull_from_hardcoded_list(key, args):
+    reminder_text = keywords_without_multiple_arguments[key].replace("arg1", list_to_string(args, " "))
+    return reminder_text
+
+
+def find_keyword(keyword_query):
+    query_list = keyword_query.split()
+    if query_list[0] == "equip":
+        if len(query_list) > 1:  # if there is additional arguments
+            reminder_text = "[Cost]: Attach this permanent to target (arg1) you control. Activate this ability only any time you could cast a sorcery."
+            reminder_text = reminder_text.replace("(arg1)", list_to_string(query_list[1:], " "))
+        else:
+            reminder_text = keywords_without_multiple_arguments["equip"]
+    elif query_list[0] == "hexproof" and query_list[1] == "from":
+        reminder_text = pull_from_hardcoded_list("hexprooffrom", query_list[2:])
+    elif query_list[0].endswith("walk"):
+        reminder_text = "This creature can't be blocked as long as defending player controls a " + remove_suffix(query_list[0], "walk") + "."
+    else:
+        try:
+            reminder_text = pull_from_hardcoded_list(query_list[0], query_list[1:])
+        except KeyError:
+            reminder_text = "Keyword not recognized. If you believe this to be an error, please submit an issue here: <https://github.com/2frikinbeast/2FBot/issues> (Please note that this feature is very much in beta.)"
+
+    return reminder_text.replace("  "," ")
+
 
 def find_rule(rule):
     file = open("MagicCompRules.txt", encoding="utf8")
@@ -161,14 +186,6 @@ def string_to_ymd(date_string):
         "day": day
     }
     return date_dictionary
-
-
-def find_keyword(keyword_query, arg1 = "X", arg2 = "Y"):
-    if keyword_query == "equip" and arg1 != "X":
-        keyword_query = "equip2"
-    reminder_text = keywords[keyword_query]
-    reminder_text = reminder_text.replace("arg1", str(arg1)).replace("arg2", str(arg2))
-    return reminder_text
 
 @client.event
 async def on_message(message):
@@ -307,7 +324,7 @@ async def on_message(message):
             await message.channel.send("That date is not valid. Input it in format `yyyy-mm-dd` or `mm-dd`")
 
     if discord_input.lower() == (get_bot_prefix(str(message.guild.id)) + "help"):
-        msg = "Command list:\n" + list_to_linebroken_string(command_list)
+        msg = "Command list:\n" + list_to_string(command_list)
         await message.channel.send(msg)
 
     if discord_input.lower() == (get_bot_prefix(str(message.guild.id)) + "hello"):
@@ -324,15 +341,7 @@ async def on_message(message):
 
     if discord_input.lower().startswith(get_bot_prefix(str(message.guild.id)) + "mtg_keyword"):
         keyword_query = remove_prefix(discord_input.lower(), (get_bot_prefix(str(message.guild.id)) + "mtg_keyword "))
-        query_list = keyword_query.split()
-        print(query_list)
-        try:
-            await message.channel.send(find_keyword(query_list[0], query_list[1], query_list[2]))
-        except IndexError:
-            try:
-                await message.channel.send(find_keyword(query_list[0], query_list[1]))
-            except IndexError:
-                await message.channel.send(find_keyword(query_list[0]))
+        await message.channel.send(find_keyword(keyword_query))
 
     if discord_input.lower().startswith(get_bot_prefix(str(message.guild.id)) + "stand"):
         stand_query = remove_prefix(discord_input, (get_bot_prefix(str(message.guild.id)) + "stand "))
@@ -347,7 +356,7 @@ async def on_message(message):
                     stand_stat_list.append(remove_suffix(line, '\n'))
                     line = fp.readline()
                     count += 1
-                description_text = list_to_linebroken_string(
+                description_text = list_to_string(
                     stand_stat_list[3:5]) + "**First appears in:** " + number_to_part(stand_stat_list[0])
                 embed = discord.Embed(
                     title=stand_stat_list[2],
@@ -355,8 +364,8 @@ async def on_message(message):
                     color=part_color(stand_stat_list[0])
                 )
                 embed.set_thumbnail(url=stand_stat_list[1])
-                embed.add_field(name='Stats', value=list_to_linebroken_string(stand_stat_list[5:11]), inline=True)
-                embed.add_field(name='Abilities', value=list_to_linebroken_string(stand_stat_list[11:]), inline=True)
+                embed.add_field(name='Stats', value=list_to_string(stand_stat_list[5:11]), inline=True)
+                embed.add_field(name='Abilities', value=list_to_string(stand_stat_list[11:]), inline=True)
                 await message.channel.send(embed=embed)
         else:
             if stand == "Flaccid Pancake":
@@ -370,13 +379,13 @@ async def on_message(message):
                 try:
                     if (datetime.utcnow() - time_last_run).total_seconds() >= cringe_copypasta_cooldown:
                         time_last_run = datetime.utcnow()
-                        msg = list_to_linebroken_string(cringe_copypasta)
+                        msg = list_to_string(cringe_copypasta)
                         await message.channel.send(msg)
                     else:
                         return
                 except NameError:
                     time_last_run = datetime.utcnow()
-                    msg = list_to_linebroken_string(cringe_copypasta)
+                    msg = list_to_string(cringe_copypasta)
                     await message.channel.send(msg)
         return
 
