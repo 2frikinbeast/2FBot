@@ -1,5 +1,6 @@
 from pandas.io import pickle
 
+
 def load_dict_from_plk(file_path):
     try:
         with open(file_path, "rb") as load_file:

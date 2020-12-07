@@ -2,3 +2,6 @@ server_config/
 .idea/
 venv/
 stand_stats
+hardcoded_values.py
+*.pyc
+hardcoded_values.py
