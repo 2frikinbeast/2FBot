@@ -389,6 +389,11 @@ async def on_message(message):
                     await message.channel.send(msg)
         return
 
+    if str(message.guild.id) == "706275564104843384":
+        if re.search(r"\b" + re.escape("tron") + r"\b", discord_input.lower()):
+            msg = "WOW FUCK TRON"
+            await message.channel.send(msg)
+
 
 @client.event
 async def on_ready():
