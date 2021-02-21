@@ -222,19 +222,22 @@ async def on_message(message):
         args = remove_prefix(discord_input, get_bot_prefix(str(message.guild.id)) + "delete ").split(" ")
         try:
             reason = list_to_string(args[1:], " ")
-        except IndexError:
-            pass
-        message_url_args = args[0].split("/")
-        message_id = message_url_args[-1]
-        message_channel = client.get_channel(int(message_url_args[-2]))
-        offending_message = await message_channel.fetch_message(int(message_id))
-        if message.author.guild_permissions.manage_messages:
-            if reason:
-                await delete_message(offending_message, True, reason)
+            message_url_args = args[0].split("/")
+            message_id = message_url_args[-1]
+            message_channel = client.get_channel(int(message_url_args[-2]))
+            offending_message = await message_channel.fetch_message(int(message_id))
+            if str(message_url_args[-2]) != str(message.guild.id):
+                await message.channel.send("You must run this command in " + str(offending_message.guild) + " in order to delete that message.")
             else:
-                await delete_message(offending_message, True)
-        else:
-            await message.channel.send("You do not have permissions to use !!delete. Manage Messages permission required.")
+                if message.author.guild_permissions.manage_messages:
+                    if reason:
+                        await delete_message(offending_message, True, reason)
+                    else:
+                        await delete_message(offending_message, True)
+                else:
+                    await message.channel.send("You do not have permissions to use !!delete. Manage Messages permission required.")
+        except IndexError:
+            await message.channel.send("Invalid arguments. Command must be structured like this: `" + str(get_bot_prefix(str(message.guild.id))) + "delete <link to offending message> <deletion reason (optional)>`")
 
     if discord_input.lower().startswith(get_bot_prefix(str(message.guild.id)) + "set_prefix "):
         if message.author.guild_permissions.manage_guild:
