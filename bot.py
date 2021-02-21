@@ -226,7 +226,7 @@ async def on_message(message):
 
     if "get_prefix" in discord_input.lower():
         msg = "`" + get_bot_prefix(message.guild.id) + "` is the current 2FBot prefix for " + str(message.guild)
-        await message.channel.send(msg)
+        await message.reply(msg, mention_author=False)
 
     if discord_input.lower().startswith(get_bot_prefix(str(message.guild.id)) + "delete "):
         args = remove_prefix(discord_input, get_bot_prefix(str(message.guild.id)) + "delete ").split(" ")
@@ -237,31 +237,29 @@ async def on_message(message):
             message_channel = client.get_channel(int(message_url_args[-2]))
             offending_message = await message_channel.fetch_message(int(message_id))
             if str(offending_message.guild.id) != str(message.guild.id):
-                await message.channel.send("You must run this command in " + str(offending_message.guild) + " in order to delete that message.")
+                await message.reply("You must run this command in " + str(offending_message.guild) + " in order to delete that message.", mention_author=False)
             else:
                 if message.author.guild_permissions.manage_messages:
                     if reason:
                         try:
                             await delete_message(offending_message, True, reason)
-                            await message.channel.send("Message successfully deleted.")
+                            await message.reply("Message successfully deleted.", mention_author=False)
                         except discord.errors.Forbidden:
-                            await message.channel.send("This bot does not have permission to Manage Messages.")
+                            await message.reply("This bot does not have permission to Manage Messages.", mention_author=False)
                         except CouldNotOpenDM:
-                            await message.channel.send("Failed to DM user deletion reason.")
-                            await message.channel.send("Message successfully deleted.")
+                            await message.reply("Failed to DM user deletion reason.\nMessage successfully deleted.", mention_author=False)
                     else:
                         try:
                             await delete_message(offending_message, True)
-                            await message.channel.send("Message successfully deleted.")
+                            await message.reply("Message successfully deleted.", mention_author=False)
                         except discord.errors.Forbidden:
-                            await message.channel.send("This bot does not have permission to Manage Messages.")
+                            await message.reply("This bot does not have permission to Manage Messages.", mention_author=False)
                         except CouldNotOpenDM:
-                            await message.channel.send("Failed to DM user deletion reason.")
-                            await message.channel.send("Message successfully deleted.")
+                            await message.reply("Failed to DM user deletion reason.\nMessage successfully deleted.", mention_author=False)
                 else:
-                    await message.channel.send("You do not have permissions to use `!!delete`. Manage Messages permission required.")
+                    await message.reply("You do not have permissions to use `!!delete`. Manage Messages permission required.", mention_author=False)
         except IndexError:
-            await message.channel.send("Invalid arguments. Command must be structured like this: `" + str(get_bot_prefix(str(message.guild.id))) + "delete <link to offending message> <deletion reason (optional)>`")
+            await message.reply("Invalid arguments. Command must be structured like this: `" + str(get_bot_prefix(str(message.guild.id))) + "delete <link to offending message> <deletion reason (optional)>`", mention_author=False)
 
     if discord_input.lower().startswith(get_bot_prefix(str(message.guild.id)) + "set_prefix "):
         if message.author.guild_permissions.manage_guild:
@@ -271,7 +269,7 @@ async def on_message(message):
                 message.guild) + ")"
         else:
             msg = "You require \"Manage Server\" permissions to run this command"
-        await message.channel.send(msg)
+        await message.reply(msg, mention_author=False)
 
     if discord_input.lower().startswith(get_bot_prefix(str(message.guild.id)) + "secret_partners") and str(
             message.guild.id) == "706275564104843384":
@@ -287,11 +285,11 @@ async def on_message(message):
         num_teams = math.floor(len(player_list) / 2)
         need_lone_wolf = not (len(player_list) % 2 == 0)
         if need_lone_wolf:
-            await message.channel.send("Splitting " + player_list_string + " into " + str(
-                num_teams) + " teams with one lone wolf. Please ensure your DMs are open.")
+            await message.reply("Splitting " + player_list_string + " into " + str(
+                num_teams) + " teams with one lone wolf. Please ensure your DMs are open.", mention_author=False)
         else:
-            await message.channel.send("Splitting " + player_list_string + " into " + str(
-                num_teams) + " teams. Please ensure your DMs are open.")
+            await message.reply("Splitting " + player_list_string + " into " + str(
+                num_teams) + " teams. Please ensure your DMs are open.", mention_author=False)
         teams = {}
         chosen_players = []
         i = 1
@@ -319,7 +317,7 @@ async def on_message(message):
             try:
                 await lone_wolf_user.send("You are the lone wolf. Try to win the game by yourself!")
             except discord.errors.HTTPException:
-                await message.channel.send("User <@!" + str(lone_wolf) + "> does not have open DMs!")
+                await message.reply("User <@!" + str(lone_wolf) + "> does not have open DMs!", mention_author=False)
         else:
             print("There is no lone wolf.")
         k = 1
@@ -330,17 +328,17 @@ async def on_message(message):
             try:
                 await normal_teammate.send("You are on a team with " + secret_teammate_name + ". Don't tell anyone!")
             except discord.errors.HTTPException:
-                await message.channel.send("User <@!" + str(teams[k]["normal"]) + "> does not have open DMs!")
+                await message.reply("User <@!" + str(teams[k]["normal"]) + "> does not have open DMs!", mention_author=False)
             try:
                 await secret_teammate.send("You are on a team, but you don't know who your teammate is.")
             except discord.errors.HTTPException:
-                await message.channel.send("User <@!" + str(teams[k]["secret"]) + "> does not have open DMs!")
+                await message.reply("User <@!" + str(teams[k]["secret"]) + "> does not have open DMs!", mention_author=False)
             k += 1
 
     if discord_input.lower().startswith(get_bot_prefix(str(message.guild.id)) + "random"):
         input = remove_prefix(discord_input.lower(), get_bot_prefix(str(message.guild.id)) + "random ")
         rand_list = input.split(" ")
-        await message.channel.send(random.choice(rand_list))
+        await message.reply(random.choice(rand_list), mention_author=False)
 
     if discord_input.lower().startswith(get_bot_prefix(str(message.guild.id)) + "birthday"):
         date = remove_prefix(discord_input.lower(), get_bot_prefix(str(message.guild.id)) + "birthday ")
@@ -349,19 +347,19 @@ async def on_message(message):
                 birthdays_dict = load_dict_from_pkl("server_config/birthday/" + str(message.guild.id) + ".pkl")
                 user_birthday = string_to_ymd(str(birthdays_dict[str(message.author.id)]))
                 if user_birthday["year"] is None:
-                    await message.channel.send("Your birthday is " + str(user_birthday["month_name"]) + " " + str(
-                        user_birthday["day"]) + " in unknown year")
+                    await message.reply("Your birthday is " + str(user_birthday["month_name"]) + " " + str(
+                        user_birthday["day"]) + " in unknown year.", mention_author=False)
                 else:
-                    await message.channel.send("Your birthday is " + str(user_birthday["month_name"]) + " " + str(
-                        user_birthday["day"]) + " " + str(user_birthday["year"]))
+                    await message.reply("Your birthday is " + str(user_birthday["month_name"]) + " " + str(
+                        user_birthday["day"]) + " " + str(user_birthday["year"]) + ".", mention_author=False)
             except (KeyError, FileNotFoundError):
-                await message.channel.send("2FBot does not know your birthday. Use the command `" + get_bot_prefix(
-                    message.guild.id) + "birthday yyyy-mm-dd` to enter your birthday. `mm-dd` is also accepted.")
+                await message.reply("2FBot does not know your birthday. Use the command `" + get_bot_prefix(
+                    message.guild.id) + "birthday yyyy-mm-dd` to enter your birthday. `mm-dd` is also accepted.", mention_author=False)
         elif re.match(r"([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))", date):  # yyyy-mm-dd
             user_birthday = string_to_ymd(date)
-            await message.channel.send(
+            await message.reply(
                 "Birthday parsed as " + user_birthday["month_name"] + " " + user_birthday["day"] + " " + user_birthday[
-                    "year"])
+                    "year"], mention_author=False)
             user_birthday = datetime.datetime(int(user_birthday["year"]), int(user_birthday["month"]),
                                               int(user_birthday["day"]))
             user_birthday_dict = {str(message.author.id): user_birthday}
@@ -370,31 +368,31 @@ async def on_message(message):
             month = date[0:2]
             day = remove_prefix(date[3:5], "0")
             month_string = number_to_month(month)
-            await message.channel.send("Birthday parsed as " + month_string + " " + day)
+            await message.reply("Birthday parsed as " + month_string + " " + day, mention_author=False)
             user_birthday = datetime.datetime(6969, int(month), int(day))
             user_birthday_dict = {str(message.author.id): user_birthday}
             merge_to_pkl_dictionary(user_birthday_dict, "server_config/birthday/" + str(message.guild.id) + ".pkl")
         else:
-            await message.channel.send("That date is not valid. Input it in format `yyyy-mm-dd` or `mm-dd`")
+            await message.reply("That date is not valid. Input it in format `yyyy-mm-dd` or `mm-dd`", mention_author=False)
 
     if discord_input.lower() == (get_bot_prefix(str(message.guild.id)) + "help"):
         msg = "Command list:\n" + list_to_string(command_list)
-        await message.channel.send(msg)
+        await message.reply(msg, mention_author=False)
 
     if discord_input.lower() == (get_bot_prefix(str(message.guild.id)) + "hello"):
         await message.reply("Hello!")
 
     if discord_input.lower() == (get_bot_prefix(str(message.guild.id)) + "invite"):
-        await message.channel.send(
-            " Use this link to invite 2FBot to a server: https://discord.com/oauth2/authorize?client_id=532326343753596938&scope=bot&permissions=337984")
+        await message.reply(
+            " Use this link to invite 2FBot to a server: https://discord.com/oauth2/authorize?client_id=532326343753596938&scope=bot&permissions=337984", mention_author=False)
 
     if discord_input.lower().startswith(get_bot_prefix(str(message.guild.id)) + "mtg_rule"):
-        rule_query = remove_prefix(discord_input.lower(), (get_bot_prefix(str(message.guild.id)) + "mtg_rule "))
-        await message.channel.send(find_rule(rule_query))
+        rule_query = remove_prefix(discord_input.lower(), (get_bot_prefix(str(message.guild.id)) + "mtg_rule "), mention_author=False)
+        await message.reply(find_rule(rule_query))
 
     if discord_input.lower().startswith(get_bot_prefix(str(message.guild.id)) + "mtg_keyword"):
         keyword_query = remove_prefix(discord_input.lower(), (get_bot_prefix(str(message.guild.id)) + "mtg_keyword "))
-        await message.channel.send(find_keyword(keyword_query))
+        await message.reply(find_keyword(keyword_query), mention_author=False)
 
     if discord_input.lower().startswith(get_bot_prefix(str(message.guild.id)) + "stand"):
         stand_query = remove_prefix(discord_input, (get_bot_prefix(str(message.guild.id)) + "stand "))
@@ -419,12 +417,12 @@ async def on_message(message):
                 embed.set_thumbnail(url=stand_stat_list[1])
                 embed.add_field(name='Stats', value=list_to_string(stand_stat_list[5:11]), inline=True)
                 embed.add_field(name='Abilities', value=list_to_string(stand_stat_list[11:]), inline=True)
-                await message.channel.send(embed=embed)
+                await message.reply(embed=embed,mention_author=False)
         else:
             if stand == "Flaccid Pancake":
-                await message.channel.send("Jesus fucking Christ, just search \"Limp Bizkit\"")
+                await message.reply("Jesus fucking Christ, just search \"Limp Bizkit\"", mention_author=False)
             else:
-                await message.channel.send(stand)
+                await message.reply(stand, mention_author=False)
 
     if str(message.guild.id) == "501837363228704768":
         for i in cringe_words:
@@ -433,19 +431,19 @@ async def on_message(message):
                     if (datetime.utcnow() - time_last_run).total_seconds() >= cringe_copypasta_cooldown:
                         time_last_run = datetime.utcnow()
                         msg = list_to_string(cringe_copypasta)
-                        await message.channel.send(msg)
+                        await message.reply(msg, mention_author=False)
                     else:
                         return
                 except NameError:
                     time_last_run = datetime.utcnow()
                     msg = list_to_string(cringe_copypasta)
-                    await message.channel.send(msg)
+                    await message.reply(msg, mention_author=False)
         return
 
     if str(message.guild.id) == "706275564104843384":
         if re.search(r"\b" + re.escape("tron") + r"\b", discord_input.lower()):
             msg = "**WOW\nFUCK\nTRON**"
-            await message.channel.send(msg)
+            await message.reply(msg, mention_author=False)
 
 
 @client.event
