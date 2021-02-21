@@ -387,8 +387,8 @@ async def on_message(message):
             " Use this link to invite 2FBot to a server: https://discord.com/oauth2/authorize?client_id=532326343753596938&scope=bot&permissions=337984", mention_author=False)
 
     if discord_input.lower().startswith(get_bot_prefix(str(message.guild.id)) + "mtg_rule"):
-        rule_query = remove_prefix(discord_input.lower(), (get_bot_prefix(str(message.guild.id)) + "mtg_rule "), mention_author=False)
-        await message.reply(find_rule(rule_query))
+        rule_query = remove_prefix(discord_input.lower(), (get_bot_prefix(str(message.guild.id)) + "mtg_rule "))
+        await message.reply(find_rule(rule_query), mention_author=False)
 
     if discord_input.lower().startswith(get_bot_prefix(str(message.guild.id)) + "mtg_keyword"):
         keyword_query = remove_prefix(discord_input.lower(), (get_bot_prefix(str(message.guild.id)) + "mtg_keyword "))
