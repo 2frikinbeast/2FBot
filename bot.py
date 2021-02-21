@@ -226,7 +226,7 @@ async def on_message(message):
             message_id = message_url_args[-1]
             message_channel = client.get_channel(int(message_url_args[-2]))
             offending_message = await message_channel.fetch_message(int(message_id))
-            if str(message_url_args[-2]) != str(message.guild.id):
+            if str(offending_message.guild.id) != str(message.guild.id):
                 await message.channel.send("You must run this command in " + str(offending_message.guild) + " in order to delete that message.")
             else:
                 if message.author.guild_permissions.manage_messages:
