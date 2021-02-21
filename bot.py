@@ -390,7 +390,7 @@ async def on_message(message):
         args = discord_input.lower().split(" ")
         if len(args) == 1:
             user_id = int(message.author.id)
-        elif len(args) == 2:
+        elif len(args) >= 2:
             user_id = int(remove_suffix(remove_prefix(str(args[1]), "<@!"), ">"))
         if user_id == 83327063448092672:
             coolness = 200 #i am always cool 😎
