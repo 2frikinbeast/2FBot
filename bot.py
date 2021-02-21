@@ -19,7 +19,7 @@ client = discord.Client()
 def get_bot_prefix(server_id):
     config_file_path = "server_config/" + str(server_id) + ".pkl"
     try:
-        config = load_dict_from_plk(config_file_path)
+        config = load_dict_from_pkl(config_file_path)
         return config["prefix"]
     except FileNotFoundError:
         return DEFAULT_PREFIX
@@ -292,7 +292,7 @@ async def on_message(message):
         date = remove_prefix(discord_input.lower(), get_bot_prefix(str(message.guild.id)) + "birthday ")
         if discord_input.lower() == get_bot_prefix(str(message.guild.id)) + "birthday":
             try:
-                birthdays_dict = load_dict_from_plk("server_config/birthday/" + str(message.guild.id) + ".pkl")
+                birthdays_dict = load_dict_from_pkl("server_config/birthday/" + str(message.guild.id) + ".pkl")
                 user_birthday = string_to_ymd(str(birthdays_dict[str(message.author.id)]))
                 if user_birthday["year"] is None:
                     await message.channel.send("Your birthday is " + str(user_birthday["month_name"]) + " " + str(
