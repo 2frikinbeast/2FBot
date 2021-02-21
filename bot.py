@@ -231,9 +231,15 @@ async def on_message(message):
             else:
                 if message.author.guild_permissions.manage_messages:
                     if reason:
-                        await delete_message(offending_message, True, reason)
+                        try:
+                            await delete_message(offending_message, True, reason)
+                        except discord.errors.Forbidden:
+                            await message.channel.send("This bot does not have permission to Manage Messages.")
                     else:
-                        await delete_message(offending_message, True)
+                        try:
+                            await delete_message(offending_message, True)
+                        except discord.errors.Forbidden:
+                            await message.channel.send("This bot does not have permission to Manage Messages.")
                 else:
                     await message.channel.send("You do not have permissions to use !!delete. Manage Messages permission required.")
         except IndexError:
