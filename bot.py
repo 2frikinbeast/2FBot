@@ -108,6 +108,7 @@ def number_to_part(param):
     except KeyError:
         return param
 
+
 def pull_from_hardcoded_list(key, args):
     reminder_text = keywords_without_multiple_arguments[key].replace("arg1", list_to_string(args, " "))
     return reminder_text
@@ -124,14 +125,15 @@ def find_keyword(keyword_query):
     elif query_list[0] == "hexproof" and query_list[1] == "from":
         reminder_text = pull_from_hardcoded_list("hexprooffrom", query_list[2:])
     elif query_list[0].endswith("walk"):
-        reminder_text = "This creature can't be blocked as long as defending player controls a " + remove_suffix(query_list[0], "walk") + "."
+        reminder_text = "This creature can't be blocked as long as defending player controls a " + remove_suffix(
+            query_list[0], "walk") + "."
     else:
         try:
             reminder_text = pull_from_hardcoded_list(query_list[0], query_list[1:])
         except KeyError:
             reminder_text = "Keyword not recognized. If you believe this to be an error, please submit an issue here: <https://github.com/2frikinbeast/2FBot/issues> (Please note that this feature is very much in beta.)"
 
-    return reminder_text.replace("  "," ")
+    return reminder_text.replace("  ", " ")
 
 
 def find_rule(rule):
@@ -187,6 +189,18 @@ def string_to_ymd(date_string):
     }
     return date_dictionary
 
+
+async def delete_message(offending_message, give_reason=False,
+                         reason: str = "No reason given."):
+    embed = discord.Embed(title="Your message in " + str(offending_message.guild) + " was deleted.")
+    embed.add_field(name="Your message", value=offending_message.content)
+    embed.set_thumbnail(url=offending_message.guild.icon_url)
+    if give_reason:
+        embed.add_field(name='Deletion reason', value=reason)
+    await offending_message.author.send(embed=embed)
+    await offending_message.delete()
+
+
 @client.event
 async def on_message(message):
     # we do not want the bot to reply to itself
@@ -204,19 +218,32 @@ async def on_message(message):
         msg = "`" + get_bot_prefix(message.guild.id) + "` is the current 2FBot prefix for " + str(message.guild)
         await message.channel.send(msg)
 
-    if discord_input.lower().startswith(get_bot_prefix(str(message.guild.id)) + "set_prefix "):
-        manage_guild_permission = False
-        message_len = 0
-        while message_len < len(message.author.roles):
-            if discord.Permissions(message.author.roles[message_len]._permissions).manage_guild:
-                new_prefix = remove_prefix(discord_input.lower(), get_bot_prefix(str(message.guild.id)) + "set_prefix ")
-                set_bot_prefix(str(message.guild.id), new_prefix)
-                msg = "Prefix changed to `" + new_prefix + "` for server " + str(message.guild.id) + " (" + str(
-                    message.guild) + ")"
-                break
+    if discord_input.lower().startswith(get_bot_prefix(str(message.guild.id)) + "delete "):
+        args = remove_prefix(discord_input, get_bot_prefix(str(message.guild.id)) + "delete ").split(" ")
+        try:
+            reason = list_to_string(args[1:], " ")
+        except IndexError:
+            pass
+        message_url_args = args[0].split("/")
+        message_id = message_url_args[-1]
+        message_channel = client.get_channel(int(message_url_args[-2]))
+        offending_message = await message_channel.fetch_message(int(message_id))
+        if message.author.guild_permissions.manage_messages:
+            if reason:
+                await delete_message(offending_message, True, reason)
             else:
-                message_len += 1
-                msg = "You require \"Manage Server\" permissions to run this command"
+                await delete_message(offending_message, True)
+        else:
+            await message.channel.send("You do not have permissions to use !!delete. Manage Messages permission required.")
+
+    if discord_input.lower().startswith(get_bot_prefix(str(message.guild.id)) + "set_prefix "):
+        if message.author.guild_permissions.manage_guild:
+            new_prefix = remove_prefix(discord_input.lower(), get_bot_prefix(str(message.guild.id)) + "set_prefix ")
+            set_bot_prefix(str(message.guild.id), new_prefix)
+            msg = "Prefix changed to `" + new_prefix + "` for server " + str(message.guild.id) + " (" + str(
+                message.guild) + ")"
+        else:
+            msg = "You require \"Manage Server\" permissions to run this command"
         await message.channel.send(msg)
 
     if discord_input.lower().startswith(get_bot_prefix(str(message.guild.id)) + "secret_partners") and str(
