@@ -190,6 +190,13 @@ def string_to_ymd(date_string):
     return date_dictionary
 
 
+class Error(Exception):
+    pass
+
+class CouldNotOpenDM(Error):
+    pass
+
+
 async def delete_message(offending_message, give_reason=False,
                          reason: str = "No reason given."):
     embed = discord.Embed(title="Your message in " + str(offending_message.guild) + " was deleted.")
@@ -197,7 +204,10 @@ async def delete_message(offending_message, give_reason=False,
     embed.set_thumbnail(url=offending_message.guild.icon_url)
     if give_reason:
         embed.add_field(name='Deletion reason', value=reason)
-    await offending_message.author.send(embed=embed)
+    try:
+        await offending_message.author.send(embed=embed)
+    except AttributeError:
+        raise CouldNotOpenDM
     await offending_message.delete()
 
 
@@ -233,13 +243,19 @@ async def on_message(message):
                     if reason:
                         try:
                             await delete_message(offending_message, True, reason)
+                            await message.channel.send("Message successfully deleted.")
                         except discord.errors.Forbidden:
                             await message.channel.send("This bot does not have permission to Manage Messages.")
+                        except CouldNotOpenDM:
+                            await message.channel.send("Failed to DM user deletion reason.")
                     else:
                         try:
                             await delete_message(offending_message, True)
+                            await message.channel.send("Message successfully deleted.")
                         except discord.errors.Forbidden:
                             await message.channel.send("This bot does not have permission to Manage Messages.")
+                        except CouldNotOpenDM:
+                            await message.channel.send("Failed to DM user deletion reason.")
                 else:
                     await message.channel.send("You do not have permissions to use !!delete. Manage Messages permission required.")
         except IndexError:
