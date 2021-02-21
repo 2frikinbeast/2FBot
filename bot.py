@@ -259,7 +259,7 @@ async def on_message(message):
                             await message.channel.send("Failed to DM user deletion reason.")
                             await message.channel.send("Message successfully deleted.")
                 else:
-                    await message.channel.send("You do not have permissions to use !!delete. Manage Messages permission required.")
+                    await message.channel.send("You do not have permissions to use `!!delete`. Manage Messages permission required.")
         except IndexError:
             await message.channel.send("Invalid arguments. Command must be structured like this: `" + str(get_bot_prefix(str(message.guild.id))) + "delete <link to offending message> <deletion reason (optional)>`")
 
