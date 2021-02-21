@@ -248,6 +248,7 @@ async def on_message(message):
                             await message.channel.send("This bot does not have permission to Manage Messages.")
                         except CouldNotOpenDM:
                             await message.channel.send("Failed to DM user deletion reason.")
+                            await message.channel.send("Message successfully deleted.")
                     else:
                         try:
                             await delete_message(offending_message, True)
@@ -256,6 +257,7 @@ async def on_message(message):
                             await message.channel.send("This bot does not have permission to Manage Messages.")
                         except CouldNotOpenDM:
                             await message.channel.send("Failed to DM user deletion reason.")
+                            await message.channel.send("Message successfully deleted.")
                 else:
                     await message.channel.send("You do not have permissions to use !!delete. Manage Messages permission required.")
         except IndexError:
