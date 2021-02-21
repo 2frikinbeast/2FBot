@@ -382,12 +382,11 @@ async def on_message(message):
         await message.channel.send(msg)
 
     if discord_input.lower() == (get_bot_prefix(str(message.guild.id)) + "hello"):
-        msg = 'Hello {0.author.mention}'.format(message)
-        await message.channel.send(msg)
+        await message.reply("Hello!")
 
     if discord_input.lower() == (get_bot_prefix(str(message.guild.id)) + "invite"):
         await message.channel.send(
-            " Use this link to invite 2FBot to a server: https://discord.com/oauth2/authorize?client_id=532326343753596938&scope=bot")
+            " Use this link to invite 2FBot to a server: https://discord.com/oauth2/authorize?client_id=532326343753596938&scope=bot&permissions=337984")
 
     if discord_input.lower().startswith(get_bot_prefix(str(message.guild.id)) + "mtg_rule"):
         rule_query = remove_prefix(discord_input.lower(), (get_bot_prefix(str(message.guild.id)) + "mtg_rule "))
