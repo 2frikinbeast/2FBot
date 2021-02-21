@@ -386,6 +386,25 @@ async def on_message(message):
         await message.reply(
             " Use this link to invite 2FBot to a server: https://discord.com/oauth2/authorize?client_id=532326343753596938&scope=bot&permissions=337984", mention_author=False)
 
+    if discord_input.lower().startswith(get_bot_prefix(str(message.guild.id)) + "coolness"):
+        args = discord_input.lower().split(" ")
+        if len(args) == 1:
+            user_id = int(message.author.id)
+        elif len(args) == 2:
+            user_id = int(remove_suffix(remove_prefix(str(args[1]), "<@!"), ">"))
+        if user_id == 83327063448092672:
+            coolness = 200 #i am always cool 😎
+        else:
+            random.seed(user_id)
+            coolness = random.randint(0, 100)
+        if user_id == int(message.author.id):
+            await message.reply("You are " + str(coolness) + "% cool.", mention_author=False)
+        else:
+            cool_user = await client.fetch_user(user_id)
+            cool_username = cool_user.display_name
+            await message.reply(cool_username + " is " + str(coolness) + "% cool.", mention_author=False)
+        random.seed(a=None) #resets random seed
+
     if discord_input.lower().startswith(get_bot_prefix(str(message.guild.id)) + "mtg_rule"):
         rule_query = remove_prefix(discord_input.lower(), (get_bot_prefix(str(message.guild.id)) + "mtg_rule "))
         await message.reply(find_rule(rule_query), mention_author=False)
