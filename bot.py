@@ -219,6 +219,7 @@ async def on_message(message):
     if message.author == client.user:  # we do not want the bot to reply to itself
         return
     elif not message.guild:
+        print(str(message.author) + " (via DM): " + str(message.content))
         await message.reply(
             "I currently cannot process DMs. If you would like to get a hold of my creator, please join this Discord server: https://discord.gg/sa7xrXx")
     else:
